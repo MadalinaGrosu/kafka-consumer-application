@@ -17,13 +17,21 @@ public class KafkaConsumerApplication {
     private Consumer<String, String> consumer;
     private ConsumerRecordsHandler<String, String> recordsHandler;
 
-    private KafkaConsumerApplication(final Consumer<String, String> consumer,
-                                    final ConsumerRecordsHandler<String, String> recordsHandler) {
+    KafkaConsumerApplication(final Consumer<String, String> consumer,
+                             final ConsumerRecordsHandler<String, String> recordsHandler) {
         this.consumer = consumer;
         this.recordsHandler = recordsHandler;
     }
 
-    private void runConsume(final Properties consumerProps) {
+    static Properties loadProperties(String fileName) throws IOException {
+        final Properties props = new Properties();
+        final FileInputStream input = new FileInputStream(fileName);
+        props.load(input);
+        input.close();
+        return props;
+    }
+
+    void runConsume(final Properties consumerProps) {
         try {
             consumer.subscribe(Collections.singletonList(consumerProps.getProperty("input.topic.name")));
             while (keepConsuming) {
@@ -35,16 +43,8 @@ public class KafkaConsumerApplication {
         }
     }
 
-    private void shutdown() {
+    void shutdown() {
         keepConsuming = false;
-    }
-
-    private static Properties loadProperties(String fileName) throws IOException {
-        final Properties props = new Properties();
-        final FileInputStream input = new FileInputStream(fileName);
-        props.load(input);
-        input.close();
-        return props;
     }
 
     public static void main(String[] args) throws Exception {
