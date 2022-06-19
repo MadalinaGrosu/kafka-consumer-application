@@ -1,0 +1,4 @@
+.idea
+bin
+consumer-records.out
+configuration/dev.properties
